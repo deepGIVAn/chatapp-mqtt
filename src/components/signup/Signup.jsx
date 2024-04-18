@@ -18,8 +18,11 @@ import {
   InputGroup,
 } from "reactstrap";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const Signup = () => {
+  const router = useRouter();
+
   const formik = useFormik({
     enableReinitialize: true,
 
@@ -33,7 +36,43 @@ const Signup = () => {
       email: Yup.string().email("Enter proper email").required("Required"),
       password: Yup.string().required("Required"),
     }),
-    onSubmit: (values) => {},
+    onSubmit: async (values) => {
+      // console.log(values);
+      try {
+        const resUserExists = await fetch("api/userexists", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username: values?.username }),
+        });
+        const { user } = await resUserExists.json();
+        console.log("user", user);
+        if (user) {
+          console.log("user Exists!!");
+          return;
+        }
+
+        const res = await fetch("api/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: values?.username,
+            email: values?.email,
+            password: values?.password,
+          }),
+        });
+        if (res?.ok) {
+          router.push("/");
+        } else {
+          console.log("User registration failed.");
+        }
+      } catch (error) {
+        console.log("Error during registration: ", error);
+      }
+    },
   });
   return (
     <React.Fragment>
