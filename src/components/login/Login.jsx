@@ -18,18 +18,40 @@ import {
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const Login = () => {
+  const router = useRouter();
+
   const formik = useFormik({
     initialValues: {
-      username: "admin@themesbrand.com",
-      password: "123456",
+      username: "",
+      password: "",
     },
     validationSchema: Yup.object({
       username: Yup.string().required("Please Enter Your Username"),
       password: Yup.string().required("Please Enter Your Password"),
     }),
-    onSubmit: (values) => {},
+    onSubmit: async (values) => {
+      try {
+        const res = await signIn("credentials", {
+          username: values.username,
+          password: values.password,
+          redirect: false, //false on tutorial  redirect true doesnot work on deployment..
+        });
+
+        console.log("logined", res);
+
+        if (res.error) {
+          console.log(res.error);
+          return;
+        }
+        router.replace("/dashboard");
+      } catch (error) {
+        console.log(error);
+      }
+    },
   });
 
   return (
