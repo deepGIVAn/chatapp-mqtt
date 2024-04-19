@@ -60,16 +60,19 @@ const Message = ({ id }) => {
 
   const getMessages = async () => {
     try {
-      const messages = await fetch(`http://localhost:3000/api/getmessages`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from: session?.user?.sub,
-          to: id,
-        }),
-      });
+      const messages = await fetch(
+        `${process.env.NEXT_PUBLIC_LIVE}/api/getmessages`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            from: session?.user?.sub,
+            to: id,
+          }),
+        }
+      );
 
       const data = await messages.json();
       if (Array.isArray(data)) setMessagesList(data);
