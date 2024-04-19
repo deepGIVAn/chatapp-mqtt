@@ -21,8 +21,6 @@ import * as Yup from "yup";
 // import { signIn } from "next-auth/react";
 // import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-// import { debounce } from "lodash";
-// import { throttle } from "lodash";
 
 const Message = ({ id }) => {
   // const router = useRouter();
@@ -75,61 +73,19 @@ const Message = ({ id }) => {
       }
     );
     const data = await messages.json();
-    return data;
-    // if (Array.isArray(data)) setMessagesList([...data]);
+    if (Array.isArray(data)) setMessagesList([...data]);
+    // return data;
   };
 
-  // setInterval(() => {
-  //   getMessages();
-  // }, 2000);
+  useEffect(() => {
+    getMessages();
+  }, []);
 
-  // const debouncedGetMessages = debounce(getMessages, 2000);
-  // setInterval(() => {
-  //   debouncedGetMessages();
-  // }, 2000);
-
-  // let isFetching = false;
-  // const throttleGetMessages = () => {
-  //   if (!isFetching) {
-  //     isFetching = true;
-  //     getMessages()
-  //       .then(() => {
-  //         isFetching = false;
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error fetching messages:", error);
-  //         isFetching = false;
-  //       });
-  //   }
-  // };
-  // setInterval(throttleGetMessages, 2000);
-
-  // const throttledGetMessages = throttle(getMessages, 2000, {
-  //   leading: true,
-  //   trailing: true,
-  // });
-  // setInterval(throttledGetMessages, 2000);
-
-  // for (let i = 1; i <= 5; i++) {
-  //   setTimeout(async () => {
-  //     const data = await getMessages();
-  //     if (Array.isArray(data)) setMessagesList([...data]);
-  //     console.log(i);
-  //   }, i * 2000); // Multiply by 1000 to convert seconds to milliseconds
-  // }
-
-  const fetchMessagesWithDelay = async (delay, count) => {
-    if (count <= 0) return; // Base case: Stop recursion when count is 0
-    setTimeout(async () => {
-      const data = await getMessages();
-      if (Array.isArray(data)) setMessagesList([...data]);
-      console.log("Connected to MongoDB");
-      fetchMessagesWithDelay(delay, count - 1); // Recursive call with reduced count
-    }, delay);
-  };
-
-  // Call the function to start fetching messages with a delay of 2000 milliseconds (2 seconds) between each fetch, 5 times.
-  fetchMessagesWithDelay(2000, 5);
+  useEffect(() => {
+    setTimeout(() => {
+      getMessages();
+    }, 2000);
+  }, [formik, session?.user?.sub, id]);
 
   return (
     <>
