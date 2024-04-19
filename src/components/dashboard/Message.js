@@ -72,22 +72,22 @@ const Message = ({ id }) => {
         const data = await messages.json();
         if (Array.isArray(data)) setMessagesList([...data]);
       };
-      let counter = 0;
-      const intervalId = setInterval(() => {
-        if (counter == 2) {
-          clearInterval(intervalId);
-        } else {
-          counter++;
-          getMessages();
-        }
-      }, 2000);
-      // setInterval(() => {
-      //   getMessages();
+      // let counter = 0;
+      // const intervalId = setInterval(() => {
+      //   if (counter == 2) {
+      //     clearInterval(intervalId);
+      //   } else {
+      //     counter++;
+      //     getMessages();
+      //   }
       // }, 2000);
+      setInterval(() => {
+        getMessages();
+      }, 2000);
     } catch (error) {
       console.log(error);
     }
-  }, [formik, session?.user?.sub, id]);
+  }, [session?.user?.sub, id]);
 
   return (
     <>
@@ -147,23 +147,6 @@ const Message = ({ id }) => {
                         </div>
                       </div>
                     ))}
-
-                    <div style={{ float: "left", clear: "both" }}>
-                      <span
-                        className="p-2"
-                        style={{
-                          display: "block",
-                          backgroundColor: "white",
-                          borderRadius: "10px",
-                          maxWidth: "50vw",
-                        }}
-                      >
-                        sjfklasdjklasjdklasjkl Lorem ipsum dolor sit amet
-                      </span>
-                      <div className="mt-1" style={{ float: "left" }}>
-                        Deepak
-                      </div>
-                    </div>
                   </div>
 
                   <Form
