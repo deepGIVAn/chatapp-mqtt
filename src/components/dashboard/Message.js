@@ -17,13 +17,15 @@ import {
 } from "reactstrap";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import Link from "next/link";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+// import Link from "next/link";
+// import { signIn } from "next-auth/react";
+// import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+// import { debounce } from "lodash";
+// import { throttle } from "lodash";
 
 const Message = ({ id }) => {
-  const router = useRouter();
+  // const router = useRouter();
   const { data: session } = useSession();
   const [messagesList, setMessagesList] = useState([]);
   const formik = useFormik({
@@ -35,17 +37,20 @@ const Message = ({ id }) => {
     }),
     onSubmit: async (values, { resetForm }) => {
       try {
-        const res = await fetch(`http://localhost:3000/api/messages`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            from: session?.user?.sub,
-            to: id,
-            message: values?.message,
-          }),
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_LIVE}/api/messages`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              from: session?.user?.sub,
+              to: id,
+              message: values?.message,
+            }),
+          }
+        );
         if (res?.ok) {
           resetForm();
         }
@@ -55,39 +60,76 @@ const Message = ({ id }) => {
     },
   });
 
-  useEffect(() => {
-    try {
-      const getMessages = async () => {
-        const messages = await fetch(`http://localhost:3000/api/getmessages`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            from: session?.user?.sub,
-            to: id,
-          }),
-        });
+  const getMessages = async () => {
+    const messages = await fetch(
+      `${process.env.NEXT_PUBLIC_LIVE}/api/getmessages`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: session?.user?.sub,
+          to: id,
+        }),
+      }
+    );
+    const data = await messages.json();
+    return data;
+    // if (Array.isArray(data)) setMessagesList([...data]);
+  };
 
-        const data = await messages.json();
-        if (Array.isArray(data)) setMessagesList([...data]);
-      };
-      // let counter = 0;
-      // const intervalId = setInterval(() => {
-      //   if (counter == 2) {
-      //     clearInterval(intervalId);
-      //   } else {
-      //     counter++;
-      //     getMessages();
-      //   }
-      // }, 2000);
-      setInterval(() => {
-        getMessages();
-      }, 2000);
-    } catch (error) {
-      console.log(error);
-    }
-  }, [session?.user?.sub, id]);
+  // setInterval(() => {
+  //   getMessages();
+  // }, 2000);
+
+  // const debouncedGetMessages = debounce(getMessages, 2000);
+  // setInterval(() => {
+  //   debouncedGetMessages();
+  // }, 2000);
+
+  // let isFetching = false;
+  // const throttleGetMessages = () => {
+  //   if (!isFetching) {
+  //     isFetching = true;
+  //     getMessages()
+  //       .then(() => {
+  //         isFetching = false;
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error fetching messages:", error);
+  //         isFetching = false;
+  //       });
+  //   }
+  // };
+  // setInterval(throttleGetMessages, 2000);
+
+  // const throttledGetMessages = throttle(getMessages, 2000, {
+  //   leading: true,
+  //   trailing: true,
+  // });
+  // setInterval(throttledGetMessages, 2000);
+
+  // for (let i = 1; i <= 5; i++) {
+  //   setTimeout(async () => {
+  //     const data = await getMessages();
+  //     if (Array.isArray(data)) setMessagesList([...data]);
+  //     console.log(i);
+  //   }, i * 2000); // Multiply by 1000 to convert seconds to milliseconds
+  // }
+
+  const fetchMessagesWithDelay = async (delay, count) => {
+    if (count <= 0) return; // Base case: Stop recursion when count is 0
+    setTimeout(async () => {
+      const data = await getMessages();
+      if (Array.isArray(data)) setMessagesList([...data]);
+      console.log("Connected to MongoDB");
+      fetchMessagesWithDelay(delay, count - 1); // Recursive call with reduced count
+    }, delay);
+  };
+
+  // Call the function to start fetching messages with a delay of 2000 milliseconds (2 seconds) between each fetch, 5 times.
+  fetchMessagesWithDelay(2000, 5);
 
   return (
     <>
