@@ -34,22 +34,26 @@ const columns = [
 
 const Dashboard = () => {
   const { data: session } = useSession();
-  const router = useRouter();
+  // const router = useRouter();
   const [rows, setRows] = React.useState([]);
-
+  const id = session?.user?.sub;
   useEffect(() => {
     const getUsers = async () => {
       const users = await fetch("api/allusers", {
-        method: "GET",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          _id: id,
+        }),
       });
+
       const usersData = await users.json();
-      const finalData = usersData.filter(
-        (item) => item.username != session?.user?._doc?.username
-      );
-      const result = finalData.map((item, index) => {
+      // const finalData = usersData.filter(
+      //   (item) => item.username != session?.user?._doc?.username
+      // );
+      const result = usersData.map((item, index) => {
         return {
           id: index + 1,
           username: item?.username,
@@ -70,6 +74,8 @@ const Dashboard = () => {
     getUsers();
   }, [session?.user?._doc?.username]);
 
+  console.log(rows);
+  // log;
   return (
     <React.Fragment>
       <div className="account-pages my-5 pt-sm-5">

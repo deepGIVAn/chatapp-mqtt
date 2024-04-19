@@ -59,9 +59,8 @@ const Message = ({ id }) => {
   });
 
   const getMessages = async () => {
-    const messages = await fetch(
-      `${process.env.NEXT_PUBLIC_LIVE}/api/getmessages`,
-      {
+    try {
+      const messages = await fetch(`http://localhost:3000/api/getmessages`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -70,22 +69,33 @@ const Message = ({ id }) => {
           from: session?.user?.sub,
           to: id,
         }),
-      }
-    );
-    const data = await messages.json();
-    if (Array.isArray(data)) setMessagesList([...data]);
-    // return data;
+      });
+
+      const data = await messages.json();
+      if (Array.isArray(data)) setMessagesList(data);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
-    getMessages();
-  }, []);
+    let counter = 0;
 
-  useEffect(() => {
-    setTimeout(() => {
-      getMessages();
+    const intervalId = setInterval(() => {
+      if (counter >= 2) {
+        clearInterval(intervalId);
+      } else {
+        counter++;
+        getMessages();
+      }
     }, 2000);
-  }, [formik, session?.user?.sub, id]);
+
+    // Initial call to getMessages
+    getMessages();
+
+    // Cleanup function to clear the interval
+    return () => clearInterval(intervalId);
+  }, [session?.user?.sub, id, formik.values]);
 
   return (
     <>
