@@ -20,6 +20,7 @@ import { DataGrid, GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
 import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 const columns = [
   { field: "id", headerName: "S.No.", width: 70 },
@@ -74,7 +75,7 @@ const Dashboard = () => {
     getUsers();
   }, [session?.user?._doc?.username]);
 
-  console.log(rows);
+  // console.log(rows);
   // log;
   return (
     <React.Fragment>
@@ -107,7 +108,10 @@ const Dashboard = () => {
                         color="primary"
                         block
                         className=" waves-effect waves-light"
-                        onClick={() => signOut()}
+                        onClick={() => {
+                          toast.success("Logged Out Successfully!!");
+                          return signOut();
+                        }}
                       >
                         Sign Out
                       </Button>

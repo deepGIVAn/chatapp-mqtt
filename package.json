@@ -26,6 +26,7 @@
     "reactstrap": "^9.2.2",
     "sass": "^1.75.0",
     "simplebar-react": "^3.2.4",
+    "sonner": "^1.4.41",
     "yup": "^1.4.0"
   },
   "devDependencies": {

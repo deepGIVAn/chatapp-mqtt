@@ -20,6 +20,7 @@ import * as Yup from "yup";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const Login = () => {
   const router = useRouter();
@@ -44,11 +45,14 @@ const Login = () => {
         console.log("logined", res);
 
         if (res.error) {
+          toast.error("Failed to Log In right Now!");
           console.log(res.error);
           return;
         }
+        toast.success("Loggined Successfully!!");
         router.replace("/dashboard");
       } catch (error) {
+        toast.error("Failed to Log In!");
         console.log(error);
       }
     },

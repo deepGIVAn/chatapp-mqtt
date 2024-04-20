@@ -19,6 +19,7 @@ import {
 } from "reactstrap";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const Signup = () => {
   const router = useRouter();
@@ -50,6 +51,7 @@ const Signup = () => {
         console.log("user", user);
         if (user) {
           console.log("user Exists!!");
+          toast.warning("User Exists Already!!");
           return;
         }
 
@@ -65,11 +67,14 @@ const Signup = () => {
           }),
         });
         if (res?.ok) {
+          toast.success("Registered Successfully!!");
           router.push("/");
         } else {
+          toast.error("Failed to Register!");
           console.log("User registration failed.");
         }
       } catch (error) {
+        toast.error("Error during Registration!");
         console.log("Error during registration: ", error);
       }
     },
