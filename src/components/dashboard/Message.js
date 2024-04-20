@@ -19,11 +19,13 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 // import Link from "next/link";
 // import { signIn } from "next-auth/react";
-// import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
+import { toast } from "sonner";
 
 const Message = ({ id }) => {
-  // const router = useRouter();
+  const router = useRouter();
   const { data: session } = useSession();
   const [messagesList, setMessagesList] = useState([]);
   const formik = useFormik({
@@ -108,6 +110,34 @@ const Message = ({ id }) => {
             <Col md={10} lg={10} xl={10}>
               <div className="text-center mb-4">
                 <h4>Chat App, Messages Section</h4>
+              </div>
+              <div
+                className="p-4"
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Button
+                  color="primary"
+                  className="waves-effect waves-light"
+                  style={{ minWidth: "100px", maxHeight: "42px" }}
+                  onClick={() => router.replace("/dashboard")}
+                >
+                  Back
+                </Button>
+                <Button
+                  color="primary"
+                  className="waves-effect waves-light"
+                  style={{ minWidth: "100px", maxHeight: "42px" }}
+                  onClick={() => {
+                    toast.success("Logged Out Successfully!!");
+                    return signOut();
+                  }}
+                >
+                  Sign Out
+                </Button>
               </div>
               <Card style={{ borderRadius: "10px" }}>
                 <CardBody className="p-4">
